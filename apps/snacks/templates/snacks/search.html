@@ -1,0 +1,110 @@
+<!DOCTYPE html> {% load static %}
+<html>
+
+<head>
+    <title>Users</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+        crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
+    <link rel='stylesheet' href="{% static 'users/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'snacks:index' %}">Snacks</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:show' user.id %}">Account</a>
+                </li>
+                {% if user.is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'snacks:new' %}">Add Snack</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'snacks:cart' %}">Shopping Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:admin' %}">Add Admins</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'snacks:inventory' %}">Inventory</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:logout' %}">Logout</a>
+                </li>
+            </ul>
+            <span class="navbar-text">
+                <form class="form-inline" action="{% url 'snacks:search' %}" method="POST">
+                    {% csrf_token %}
+
+                    <input class="form-control mr-sm-2" type="search" name='search' placeholder="Search snack.." aria-label="Search">
+                    <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
+
+                </form>
+            </span>
+        </div>
+    </nav>
+    <br>
+
+<div class="container">
+
+    <div class="card-body">
+        <div class="row">
+            {% if snacks.count > 0 %} {% for snack in snacks %}
+
+            <div class="col" style='margin-left: 18px; margin-top: 20px;'>
+                <div class="card" style="width: 18em">
+                        <div class="img-responsive img-thumbnail ratio-4-3" style="height:18em;background:url({{snack.picture_url}}) no-repeat;background-size:contain;background-position:center"></div>                    <div class="card-body">
+                        <h5>
+                            {% if 'search' not in snack %}
+                            <a href="{% url 'snacks:show' snack.id %}">{{snack.name}}</a>
+                            {% else %}
+                            <p>{{snack.name}}</p>
+                            {% endif %}
+                        </h5>
+                        {% if user.is_admin %}
+                        {% if 'search' in snack %}
+                        <a href="{% url 'snacks:new' snack.id %}">Add to Database</a>
+                        {% else %}
+                        <form action="{% url 'snacks:add' snack.id %}" method="POST">
+                            {% csrf_token %}
+                    
+                            <input type="submit" value="Add To Cart">
+                        </form>
+                        {% endif %}
+
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %} {% endif %}
+        </div>
+
+
+    </div>
+
+
+
+</div>
+
+
+
+
+
+</body>
+
+</html>

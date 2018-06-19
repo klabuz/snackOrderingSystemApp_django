@@ -1,0 +1,151 @@
+<!DOCTYPE html> {% load static %}
+<html>
+
+<head>
+    <title>New Snack</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+        crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
+    <link rel='stylesheet' href="{% static 'users/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'snacks:index' %}">Snacks</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:show' user.id %}">Account</a>
+                </li>
+                {% if user.is_admin %}
+                <li class="nav-item">
+                        <a class="nav-link" style='color:rgb(187, 49, 49);' href="{% url 'snacks:new' %}">Add Snack</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'snacks:cart' %}">Shopping Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:admin' %}">Add Admins</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'snacks:inventory' %}">Inventory</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:logout' %}">Logout</a>
+                </li>
+            </ul>
+            <span class="navbar-text">
+                <form class="form-inline" action="{% url 'snacks:search' %}" method="POST">
+                    {% csrf_token %}
+
+                    <input class="form-control mr-sm-2" name='search' type="search" placeholder="Search snack.." aria-label="Search">
+                    <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
+
+                </form>
+            </span>
+        </div>
+    </nav>
+    <div class="container">
+        <br>
+        <h1>New Snack</h1><br>
+        <form action="{% url 'snacks:create' %}" method="POST">
+            <div class="form-group">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col">
+                        Name:
+                        {% if 'name' in snack %}
+                        <input type="text" name="name" class="form-control" value="{{snack.name}}">
+                        {% else %}
+                        <input type="text" name="name" class="form-control"> 
+                        {% endif %}
+                        {% if request.session.name %}
+                        <p>{{request.session.name}}</p>
+                        {% endif %}
+                    </div>
+                    
+  
+                </div>
+ 
+                <br><br>
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text" for="inputGroupSelect01">Brand</label>
+                            </div>
+                            {% if request.session.brand %}
+                            <p>{{request.session.brand}}</p>
+                            {% endif %}
+                            <select name="brand">
+                                <option value="" selected disabled hidden></option>
+                                {% for brand in brands %}
+                                <option value="{{brand.name}}">{{brand.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        Add a New Brand:
+                        {% if 'brand' in snack %}
+                        <input type="text" name='nbrand' value="{{snack.brand}}">
+                        {% else %}
+                        <input type="text" name='nbrand'>
+                        {% endif %}
+                    </div>
+                    <div class="col"></div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text" for="inputGroupSelect01">Category</label>
+                            </div>
+                            {% if request.session.category %}
+                            <p>{{request.session.category}}</p>
+                            {% endif %}
+                            <select name='category'>
+                                <option value="" selected disabled hidden></option>
+                                {% for category in categories %}
+                                <option value="{{category.name}}">{{category.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        Add a New Category:
+                        <input type="text" name='ncategory'>
+                        <br>
+
+                    </div>
+                    <div class="col">
+                            Picture URL:
+                            {% if 'picture_url' in snack %}
+                            <input type="text" name="picture_url" value="{{snack.picture_url}}"
+                            {% else %}
+                            <input type="text" name='picture_url'>
+                            {% endif %}
+                        </div>
+                                    </div>
+            </div>
+            <input class="btn btn-dark" type="submit" value='create' style='width: 140px;'>
+
+        </form>
+    </div>
+</body>
+
+</html>
